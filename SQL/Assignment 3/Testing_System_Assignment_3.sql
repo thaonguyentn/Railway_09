@@ -317,6 +317,11 @@ FROM `Account`
 ORDER BY char_length(FullName) DESC
 LIMIT 1;
 
+SELECT *, MAX(length_of_fullname)
+FROM
+	(SELECT `AccountID`,FullName, char_length(FullName) AS length_of_fullname
+	FROM `Account`) AS FullnameLongest; 
+      
 -- ---------------: Question 5: Lấy ra thông tin account có full name dài nhất và thuộc phòng ban có id = 3-----------
 
 SELECT *, char_length(FullName) AS length_of_fullname 
@@ -324,6 +329,8 @@ FROM `Account`
 WHERE DepartmentID = 3
 ORDER BY char_length(FullName) DESC
 LIMIT 1;
+
+SELECT 
 
 -- ----------------Question 6: Lấy ra tên group đã tham gia trước ngày 20/12/2019----------------------
 
@@ -381,88 +388,4 @@ UPDATE `GroupAccount`
 SET 	GroupID=4
 WHERE 	AccountID=5; 
 
--- ------------------------- -------------------------------ASSIGNMENT_ 4----------------------------------------------------------------------------
--- ------------------------------------------------------------------------------------------------------------------------------------------------
-
--- ------------- Excercise 1/ Question 1: Viết lệnh để lấy ra danh sách nhân viên và thông tin phòng ban của họ ------------------------------------ 
-
-SELECT * 
-FROM 		`account` AS A
-LEFT JOIN 	Department AS D ON A.DepartmentID = D.DepartmentID;
-
--- ------------- Excercise 1/ Question 2: Viết lệnh để lấy ra thông tin các account được tạo sau ngày 20/12/2010 -----------------------------------
-SELECT * 
-FROM 		`account` AS A
-LEFT JOIN 	Department AS D ON A.DepartmentID = D.DepartmentID
-WHERE 		A.CreateDate >= '2010-12-20';
-
-
--- ------------- Excercise 1/Question 4: Viết lệnh để lấy ra danh sách các phòng ban có >3 nhân viên ---------------------
-
-SELECT 		DepartmentName, COUNT(A.AccountID) AS Number_of_Employee_in_Department
-FROM 		`Account` AS A
-INNER JOIN 	Department AS D ON A.DepartmentID = D.DepartmentID
-GROUP BY 	A.DepartmentID
-HAVING 		COUNT(A.AccountID) >= 3;
-
--- ------------- Excercise 1/Question 5: Viết lệnh để lấy ra danh sách câu hỏi được sử dụng trong đề thi nhiều nhất------------------
--- CACH 1 
-CREATE VIEW QuestionStatistic AS
-			SELECT Q.QuestionID , COUNT(Q.QuestionID) AS NumberofQuestionAppear
-			FROM Question AS Q 
-			JOIN ExamQuestion AS EQ ON Q.QuestionID = EQ.QuestionID
-			GROUP BY (EQ.ExamID);
-SELECT * FROM QuestionStatistic
-HAVING MAX(NumberofQuestionAppear); 
-
- -- NGAN_HON------------
- 
- SELECT * 
- FROM (SELECT Q.QuestionID , COUNT(Q.QuestionID) AS NumberofQuestionAppear
-			FROM Question AS Q 
-			JOIN ExamQuestion AS EQ ON Q.QuestionID = EQ.QuestionID
-			GROUP BY (EQ.ExamID)) AS QuestionStatistic
- HAVING MAX(NumberofQuestionAppear);          
-            
-
--- ------------- Excercise 1/Question 6: Thông kê mỗi category Question được sử dụng trong bao nhiêu Question ----------------------------
-
--- ------------- Excercise 1/Question 14:Lấy ra group không có account nào --------------------------------------------------------------
-
- 
-
--- ---------------------- Exercise 2: Union ----------------------------------------------------------------------------------------------
--- ---------------------------------------------------------------------------------------------------------------------------------------
--- Question 17:
--- a) Lấy các account thuộc nhóm thứ 1---------------------------------------------------------
--- b) Lấy các account thuộc nhóm thứ 2---------------------------------------------------------
--- c) Ghép 2 kết quả từ câu a) và câu b) sao cho không có record nào trùng nhau ---------------
-
-SELECT * 
-FROM 	`Account` AS A
-JOIN 	GroupAccount AS GA ON A.AccountID = GA.AccountID
-WHERE 	GA.GroupID = 1
-UNION 
-SELECT * 
-FROM 	`Account` AS A
-JOIN 	GroupAccount AS GA ON A.AccountID = GA.AccountID
-WHERE 	GA.GroupID = 2; 
-
--- Question 18:
--- a) Lấy các group có lớn hơn 5 thành viên ---------------------------------------------------------
--- b) Lấy các group có nhỏ hơn 7 thành viên ---------------------------------------------------------
--- c) Ghép 2 kết quả từ câu a) và câu b)
-
-SELECT 		*, COUNT(A.AccountID) AS NumberofGroup
-FROM 		`Account` AS A
-JOIN 		GroupAccount AS GA ON A.AccountID = GA.AccountID
-GROUP BY 	GA.GroupID
-HAVING 		Count(NumberofGroup) > 5
-
-UNION ALL
-
-SELECT 		*, COUNT(A.AccountID) AS NumberofGroup
-FROM 		`Account` AS A
-JOIN 		GroupAccount AS GA ON A.AccountID = GA.AccountID
-GROUP BY 	GA.GroupID
-HAVING 		Count(NumberofGroup) < 7;
+-- ---------------------- FINISHED ASSIGNMENT 4 ---------------------------------------------
