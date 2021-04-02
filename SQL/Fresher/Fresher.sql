@@ -18,8 +18,8 @@ CREATE TABLE 			Trainee (
     EvaluationNotes		VARCHAR(50) NOT NULL,
     
     CONSTRAINT ETIQ_KIEMTRA 		CHECK(ETIQ BETWEEN 0 AND 20),
-	CONSTRAINT ETGmath_KIEMTRA 		CHECK(ETIQ BETWEEN 0 AND 20),
-    CONSTRAINT ETEnglish_KIEMTRA 	CHECK(ETIQ BETWEEN 0 AND 50)
+	CONSTRAINT ETGmath_KIEMTRA 		CHECK(ETGmath BETWEEN 0 AND 20),
+    CONSTRAINT ETEnglish_KIEMTRA 	CHECK(ETEnglish BETWEEN 0 AND 50)
     );
     
 INSERT INTO `Trainee` 	(	FullName,				BirthDate,			Gender,		ETIQ,		ETGmath,	ETEnglish,	 TrainingClass,		EvaluationNotes)
@@ -105,8 +105,8 @@ WHERE Char_Length(Fullname) =
 
 SELECT FullName, ETIQ, ETGmath, ETEnglish
 FROM Trainee
-WHERE Char_Length(Fullname) =(
-								SELECT MAX(Char_Length(Fullname)) FROM Trainee);
+WHERE Char_Length(Fullname) =
+							(SELECT MAX(Char_Length(Fullname)) FROM Trainee);
 
 -- Question 13 Lấy ra 5 thực tập sinh có tuổi nhỏ nhất -------------------------------
 
@@ -154,9 +154,10 @@ WHERE TrainingClass ='VTI001';
 
 -- Question 22: Đếm tổng số thực tập sinh trong lớp VTI001 và VTI003 có bao nhiêu thực tập sinh. -----------------
 
-SELECT *
+SELECT TrainingClass, COUNT (TraineeID) AS number_of_trainees
 FROM Trainee
-WHERE (TrainingClass ='VTI001') OR (TrainingClass ='VTI003') ;
+WHERE (TrainingClass ='VTI001') OR (TrainingClass ='VTI003')
+GROUP BY TrainingClass;
 
 -- Question 23: Lấy ra số lượng các thực tập sinh theo giới tính: Male, Female, Unknown -----------------------------------
 
