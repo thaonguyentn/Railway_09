@@ -243,32 +243,32 @@ SELECT * FROM `CategoryQuestion`;
 
 INSERT INTO `Question`	(Content						, CategoryID			, TypeID					, CreatorID	)
 VALUES 					('CauhoiHocLapTrinh'			, 	1					,	2						,   1		),
-						('TimDenVTINhuTheNao'			, 	2					,	2						,   2		),
+						('TimDenVTINhuTheNao'			, 	1					,	2						,   2		),
                         ('KetQuaDatDuocLaGi'			, 	3					,	2						,   5		),
-                        ('MongMuonOVTILaGi'				, 	4					,	2						,   2		),
+                        ('MongMuonOVTILaGi'				, 	4					,	1						,   2		),
                         ('DinhHuongTuongLai'			, 	5					,	2						,   4		),
-                        ('Muctieulagi'					, 	6					,	2						,   7		),
+                        ('Muctieulagi'					, 	6					,	1						,   7		),
                         ('LapTrinhVienLaGi'				, 	7					,	2						,   8		),
                         ('LapTrinhJaVaLaGi'				, 	8					,	2						,   6		),
-                        ('BanThayCoKhoKhong'			, 	9					,	2						,   4		),
+                        ('BanThayCoKhoKhong'			, 	9					,	1						,   4		),
                         ('BanSeCoGangChu'				, 	10					,	2						,   9		),
-                        ('MySQLLaGi'					, 	8					,	2						,   4		),
+                        ('MySQLLaGi'					, 	8					,	1						,   4		),
                         ('NgonNguJaVaLaGi '				, 	8					,	2						,   9		),
-                        ('BanThichDungNgonNguNao'		, 	4					,	2						,   1		);
+                        ('BanThichDungNgonNguNao'		, 	4					,	1						,   1		);
                         
 SELECT * FROM `Question`;                    
 
 INSERT INTO `Answer`	(Content						, QuestionID					, IsCorrect)
-VALUES 					('TaiSaoHocLapTrinh'			,	1							,   	1),
-						('TimDenVTINhuTheNao'			,	2							,		1),
-						('KetQuaDatDuocLaGi'			,	2							,		1),
-                        ('MongMuonOVTILaGi'				,	2							,		1),
-                        ('DinhHuongTuongLai'			,	2							,		1),
-						('Muctieulagi'					,	9							,		1),
-						('LapTrinhVienLaGi'				,	9							,		1),
-						('LapTrinhJaVaLaGi'				,	5							,		1),
-						('BanThayCoKhoKhong'			,	10							,		1),
-						('BanSeCoGangChu'				,	5							,		1);
+VALUES 					('BoiViToiThich'				,	1							,   	1),
+						('ThichNgonNguJava'				,	2							,		1),
+						('QuyetTamhocTap'				,	2							,		1),
+                        ('LamViecTaiVTI'				,	2							,		1),
+                        ('TroThanhMotProjectM'			,	2							,		1),
+						('HoanThanhXuatSac'				,	9							,		1),
+						('NguoiTaoRaTrangWeb'			,	9							,		1),
+						('JaVaCoVeKho'					,	5							,		1),
+						('VTILaCongTyCongNghe'			,	10							,		1),
+						('LaMotCauHoiKho'				,	5							,		1);
    
 SELECT * FROM `Answer`;
 
@@ -324,31 +324,132 @@ GROUP BY 	A.DepartmentID
 HAVING 		COUNT(A.AccountID) >= 3;
 
 -- ------------- Excercise 1/Question 5: Viết lệnh để lấy ra danh sách câu hỏi được sử dụng trong đề thi nhiều nhất------------------
--- CACH 1 
-CREATE VIEW QuestionStatistic AS
-			SELECT Q.QuestionID , COUNT(Q.QuestionID) AS NumberofQuestionAppear
-			FROM Question AS Q 
-			JOIN ExamQuestion AS EQ ON Q.QuestionID = EQ.QuestionID
-			GROUP BY (EQ.ExamID);
-SELECT * FROM QuestionStatistic
-HAVING MAX(NumberofQuestionAppear); 
+-- Using View -----------------------------
 
- -- NGAN_HON------------
- 
  SELECT * 
  FROM (SELECT Q.QuestionID , COUNT(Q.QuestionID) AS NumberofQuestionAppear
 			FROM Question AS Q 
 			JOIN ExamQuestion AS EQ ON Q.QuestionID = EQ.QuestionID
 			GROUP BY (EQ.ExamID)) AS QuestionStatistic
- HAVING MAX(NumberofQuestionAppear);          
-            
-
--- ------------- Excercise 1/Question 6: Thông kê mỗi category Question được sử dụng trong bao nhiêu Question ----------------------------
-
--- ------------- Excercise 1/Question 14:Lấy ra group không có account nào --------------------------------------------------------------
-
+ HAVING MAX(NumberofQuestionAppear);     
  
 
+-- ------------- Question 6: Thông kê mỗi category Question được sử dụng trong bao nhiêu Question
+
+SELECT 		CQ.CategoryID, CQ.CategoryName, COUNT(Q.CategoryID) AS NumberofCategoryQuestion
+FROM 		CategoryQuestion AS CQ
+LEFT JOIN 	Question AS Q ON CQ.CategoryID = Q.CategoryID
+GROUP BY 	CQ.CategoryID;
+
+-- ------------- Question 7: Thông kê mỗi Question được sử dụng trong bao nhiêu Exam
+
+SELECT Q.QuestionID, Q.Content, COUNT(EQ.ExamID) AS NumBerOfExam
+FROM Question Q
+LEFT JOIN ExamQuestion EQ ON Q.QuestionID = EQ.QuestionID
+GROUP BY Q.QuestionID
+ORDER BY NumBerOfExam ASC;
+
+-- ------------- Question 8: Lấy ra Question có nhiều câu trả lời nhất
+
+SELECT Q.QuestionID, Q.Content, COUNT(AnswerID) AS AnswerNumbers
+FROM Question Q
+INNER JOIN Answer A ON Q.QuestionID = A.QuestionID
+GROUP BY (Q.QuestionID) 
+HAVING COUNT(AnswerID) = (SELECT MAX(AnswerNumbers) 
+						  FROM 	(SELECT Q.QuestionID, Q.Content, COUNT(AnswerID) AS AnswerNumbers
+								 FROM Question Q
+								 INNER JOIN Answer A ON Q.QuestionID = A.QuestionID
+								 GROUP BY Q.QuestionID) AS NewTable);
+													
+ 
+-- ------------- Question 9: Thống kê số lượng account trong mỗi group
+
+SELECT		GroupID, COUNT(A.AccountID) AS 'NumbeofAccount'
+FROM		`Account` AS A
+INNER JOIN 	GroupAccount GA ON A.AccountID = GA.AccountID
+GROUP BY	GA.GroupID;
+
+-- ------------- Question 10: Tìm chức vụ có ít người nhất
+
+SELECT 		P.PositionID, P.PositionName, COUNT(A.PositionID) AS 'NumberofPeople'
+FROM		Position AS P 
+INNER JOIN 	`Account` AS A ON P.PositionID = A.PositionID
+GROUP BY 	P.PositionID
+HAVING		COUNT(A.PositionID)	=(SELECT MIN(NumberPosition)
+									FROM	(SELECT 	COUNT(P.PositionID) AS NumberPosition
+											FROM		Position P 
+											INNER JOIN 	`Account` A ON A.PositionID = P.PositionID		
+											GROUP BY	P.PositionID) AS MinPosition);
+                                                
+                                                
+-- ------------- Question 11: Thống kê mỗi phòng ban có bao nhiêu dev, test, scrum master, PM
+
+SELECT * FROM testingsystem.account;
+
+SELECT 
+    t1.DepartmentID,
+    t1.PositionID,
+    IF((t2.number_of_account IS NULL),
+        0,
+        t2.number_of_account) AS number_of_account
+FROM
+    (SELECT 
+        d.DepartmentID, p.PositionID
+    FROM
+        department d
+    CROSS JOIN `position` p
+    WHERE
+        p.PositionName IN ('Dev' , 'Test', 'Scrum Master', 'PM')
+    ORDER BY d.DepartmentID , p.PositionID) AS t1
+        LEFT JOIN
+    (SELECT 
+        d.DepartmentID,
+            p.PositionID,
+            COUNT(a.AccountID) AS number_of_account
+    FROM
+        position p
+    LEFT JOIN `account` a ON p.PositionID = a.PositionID
+    RIGHT JOIN department d ON a.DepartmentID = d.DepartmentID
+    WHERE
+        p.PositionName IN ('Dev' , 'Test', 'Scrum Master', 'PM')
+    GROUP BY d.DepartmentID , p.PositionID) AS t2 ON t1.DepartmentID = t2.DepartmentID
+													AND t1.PositionID = t2.PositionID
+GROUP BY t1.DepartmentID , t1.PositionID
+ORDER BY t1.DepartmentID , t1.PositionID;
+
+
+-- ------------- Question 12: Lấy thông tin chi tiết của câu hỏi bao gồm: thông tin cơ bản của
+--                            question, loại câu hỏi, ai là người tạo ra câu hỏi, câu trả lời là gì, …-------------
+
+SELECT TQ.TypeID,TQ.TypeName, Q.CreatorID, A.Content
+FROM Question AS Q
+JOIN TypeQuestion AS TQ ON Q.TypeID = TQ.TypeID
+JOIN Answer AS A ON Q.QuestionID = A.QuestionID;
+
+-- ------------- Question 13: Lấy ra số lượng câu hỏi của mỗi loại tự luận hay trắc nghiệm
+
+SELECT		TQ.TypeName, COUNT(Q.TypeID) AS 'NumberofQuestion'
+FROM		Question Q 
+INNER JOIN 	TypeQuestion TQ ON Q.TypeID = TQ.TypeID
+GROUP BY	Q.TypeID;
+
+
+-- ------------- Question 14 trung 15: Lấy ra group không có account nào
+
+SELECT		GroupID
+FROM		`Group` 
+WHERE		GroupID  NOT IN	(SELECT		GroupID
+							 FROM		GroupAccount);
+
+-- ------------- Question 16: Lấy ra question không có answer nào
+
+SELECT		QuestionID, Content
+FROM		Question
+WHERE		QuestionID NOT IN (SELECT	QuestionID
+							   From		Answer);
+                               
+                               
+                        
 -- ---------------------- Exercise 2: Union ----------------------------------------------------------------------------------------------
 -- ---------------------------------------------------------------------------------------------------------------------------------------
 -- Question 17:

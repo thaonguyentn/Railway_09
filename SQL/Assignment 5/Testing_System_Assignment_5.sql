@@ -324,8 +324,16 @@ FROM
  
  -- Question 2: Tạo view có chứa thông tin các account tham gia vào nhiều group nhất-------------
  
- SELECT *
+ CREATE VIEW AccountStatistic AS
+ SELECT A.AccountID, COUNT(A.AccountID) AS NumberofAccount
 		FROM `Account` AS A
-		JOIN GroupAcount AS GA ON A.AccountID = GA.AccountID;
-		WHERE D.DepartmentName = 'Sale' ;
+		JOIN groupaccount AS GA ON A.AccountID = GA.AccountID
+        GROUP BY GA.AccountID;
+ 
+ SELECT AccountID, MAX(NumberofAccount)
+ FROM AccountStatistic
+ WHERE NumberofAccount = 6;
+ 
+ 
+	
  
