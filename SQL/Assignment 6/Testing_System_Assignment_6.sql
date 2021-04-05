@@ -243,18 +243,17 @@ SELECT * FROM `CategoryQuestion`;
 
 INSERT INTO `Question`	(Content						, CategoryID			, TypeID					, CreatorID	)
 VALUES 					('CauhoiHocLapTrinh'			, 	1					,	2						,   1		),
-						('TimDenVTINhuTheNao'			, 	2					,	2						,   2		),
+						('TimDenVTINhuTheNao'			, 	2					,	1						,   2		),
                         ('KetQuaDatDuocLaGi'			, 	3					,	2						,   5		),
                         ('MongMuonOVTILaGi'				, 	4					,	2						,   2		),
-                        ('DinhHuongTuongLai'			, 	5					,	2						,   4		),
+                        ('DinhHuongTuongLai'			, 	5					,	1						,   4		),
                         ('Muctieulagi'					, 	6					,	2						,   7		),
-                        ('LapTrinhVienLaGi'				, 	7					,	2						,   8		),
-                        ('LapTrinhJaVaLaGi'				, 	8					,	2						,   6		),
-                        ('BanThayCoKhoKhongÁDFGHJKJH
-                        CFVGBHJKGFNHMMJMJMJMJMJMJMJM'			, 	9					,	2						,   4		),
-                        ('BanSeCoGangChu'				, 	10					,	2						,   9		),
+                        ('LapTrinhVienLaGi'				, 	7					,	1						,   8		),
+                        ('LapTrinhJaVaLaGi'				, 	8					,	1						,   6		),
+                        ('BanThayCoKhoKhongÁDFGHJKJH'	, 	9					,	2						,   4		),
+                        ('BanSeCoGangChu'				, 	10					,	1						,   9		),
                         ('MySQLLaGi'					, 	8					,	2						,   4		),
-                        ('NgonNguJaVaLaGi '				, 	8					,	2						,   9		),
+                        ('NgonNguJaVaLaGi '				, 	8					,	1						,   9		),
                         ('BanThichDungNgonNguNao'		, 	4					,	2						,   1		);
                         
 SELECT * FROM `Question`;                    
@@ -297,7 +296,7 @@ VALUES 						(	1		,	1	),
                             (	3		,	7	),
                             (	7		,	8	),
                             (	8		,	9	),
-                            (	2		,	10	
+                            (	2		,	10	);
                             
 -- ===================== ASSIGNMENT_ 6 ==================================================================
 -- ======================================================================================================
@@ -321,15 +320,96 @@ Call sp_GetAccInforFromDepName('Accounting');
 --  Question 2: Tạo store để in ra số lượng account trong mỗi group -------------------------------
 -- --------------------------------------------------------------------------------------------------      
 
-DROP PROCEDURE IF EXISTS sp_GetAccInforFromDepName;
+DROP PROCEDURE IF EXISTS sp_GetAccFromGroupAccount;
 DELIMITER $$
-CREATE PROCEDURE sp_GetAccInforFromDepName(IN in_Dep VARCHAR(50))
+CREATE PROCEDURE sp_GetAccFromGroupAccount(IN in_GroupID TINYINT)
 BEGIN
-	SELECT DepartmentName, AccountID, D.DepartmentID, FullName
-	FROM  Department AS D
-	JOIN  `Account` AS A ON   D.DepartmentID = A.DepartmentID    
-	WHERE D.DepartmentName = in_Dep;
+	SELECT GA.GroupID, COUNT(GroupID) AS NumberAccount
+	FROM  GroupAccount AS GA
+	JOIN  `Account` AS A ON  A.AccountID = GA.AccountID
+    WHERE GA.GroupID = in_GroupID
+	GROUP BY GA.GroupID; 
 END$$
 DELIMITER 
 
-Call sp_GetAccInforFromDepName('Accounting');    
+Call sp_GetAccFromGroupAccount('1');    
+ 
+-- Question 3: Tạo store để thống kê mỗi type question có bao nhiêu question được tạo -------------------
+-- trong tháng hiện tại-----------
+
+DROP PROCEDURE IF EXISTS sp_GetQuestionFromTypeQues;
+DELIMITER $$
+CREATE PROCEDURE sp_GetQuestionFromTypeQues(IN in_TypeQue VARCHAR(50))
+BEGIN
+	SELECT TQ.TypeName, COUNT(Q.QuestionID) AS NumberOfQuestion
+	FROM TypeQuestion AS TQ
+	JOIN Question AS Q ON TQ.TypeID = Q.TypeID
+    WHERE TQ.TypeName = in_TypeQue AND month(now())
+	GROUP BY TQ.TypeID; 
+
+END$$
+DELIMITER 
+
+Call sp_GetQuestionFromTypeQues('Essay');   
+
+-- Question 4: Tạo store để trả ra id của type question có nhiều câu hỏi nhất ---------------------
+
+DROP PROCEDURE IF EXISTS sp_GetTypeIDFromTQ;
+DELIMITER $$
+CREATE PROCEDURE sp_GetTypeIDFromTQ(IN in_TypeQ VARCHAR(50))
+BEGIN
+	SELECT TQ.TypeName, TQ.TypeID, COUNT(Q.QuestionID) AS NumberOfQues
+	FROM TypeQuestion AS TQ
+	JOIN Question AS Q ON TQ.TypeID = Q.TypeID
+	GROUP BY TQ.TypeID 
+	HAVING COUNT(Q.QuestionID) = 	(SELECT MAX(NumberOfQues) 
+									FROM (SELECT TQ.TypeName, COUNT(Q.QuestionID) AS NumberOfQues
+										FROM TypeQuestion AS TQ
+										JOIN Question AS Q ON TQ.TypeID = Q.TypeID
+										GROUP BY TQ.TypeID) AS NewTable);
+
+END$$
+DELIMITER 
+
+Call sp_GetTypeIDFromTQ('Essay');  
+
+-- Question 5: Sử dụng store ở question 4 để tìm ra tên của type question --------------
+
+-- Question 6: Viết 1 store cho phép người dùng nhập vào 1 chuỗi và trả về group có tên
+-- chứa chuỗi của người dùng nhập vào hoặc trả về user có username chứa chuỗi của người dùng nhập vào -----
+
+SELECT *
+FROM 
+
+-- Question 7: Viết 1 store cho phép người dùng nhập vào thông tin fullName, email và trong store sẽ tự động gán:
+--             username sẽ giống email nhưng bỏ phần @..mail đi 
+--             positionID: sẽ có default là developer
+--             departmentID: sẽ được cho vào 1 phòng chờ
+--             Sau đó in ra kết quả tạo thành công ----------
+
+-- Question 8: Viết 1 store cho phép người dùng nhập vào Essay hoặc Multiple-Choice------------------
+--             để thống kê câu hỏi essay hoặc multiple-choice nào có content dài nhất ---------------
+
+-- Question 9: Viết 1 store cho phép người dùng xóa exam dựa vào ID -----------------------------------
+
+DROP PROCEDURE IF EXISTS sp_DeleteExam;
+DELIMITER $$
+CREATE PROCEDURE sp_DeleteExam(IN in_ExamID TINYINT)
+BEGIN
+	DELETE
+	FROM 	ExamQuestion
+	WHERE 	ExamID ;
+
+	DELETE
+	FROM 	Exam
+	WHERE 	ExamID = in_ExamID ;
+END$$
+DELIMITER 
+
+Call sp_DeleteExam('1');   
+
+
+-- Question 12: Viết store để in ra mỗi tháng có bao nhiêu câu hỏi được tạo trong năm nay ---------------------------------
+
+
+
