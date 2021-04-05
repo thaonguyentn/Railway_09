@@ -250,7 +250,8 @@ VALUES 					('CauhoiHocLapTrinh'			, 	1					,	2						,   1		),
                         ('Muctieulagi'					, 	6					,	2						,   7		),
                         ('LapTrinhVienLaGi'				, 	7					,	2						,   8		),
                         ('LapTrinhJaVaLaGi'				, 	8					,	2						,   6		),
-                        ('BanThayCoKhoKhong'			, 	9					,	2						,   4		),
+                        ('BanThayCoKhoKhongÁDFGHJKJH
+                        CFVGBHJKGFNHMMJMJMJMJMJMJMJM'			, 	9					,	2						,   4		),
                         ('BanSeCoGangChu'				, 	10					,	2						,   9		),
                         ('MySQLLaGi'					, 	8					,	2						,   4		),
                         ('NgonNguJaVaLaGi '				, 	8					,	2						,   9		),
@@ -311,29 +312,48 @@ VALUES 						(	1		,	1	),
 SELECT * 
 FROM StaffofSale;
 
--- --------Using Subquery-------------------
-
-SELECT * 
-FROM 
-		(SELECT A.FullName AS StaffofSale
-		FROM `Account` AS A
-		JOIN Department AS D ON A.DepartmentID = D.DepartmentID
-		WHERE D.DepartmentName = 'Sale') AS StaffofSale;
-
-
- 
  -- Question 2: Tạo view có chứa thông tin các account tham gia vào nhiều group nhất-------------
  
- CREATE VIEW AccountStatistic AS
- SELECT A.AccountID, COUNT(A.AccountID) AS NumberofAccount
-		FROM `Account` AS A
-		JOIN groupaccount AS GA ON A.AccountID = GA.AccountID
-        GROUP BY GA.AccountID;
+WITH CTE_GetCountAccountID AS (
+SELECT count(ga.AccountID) AS SL FROM groupaccount ga
+GROUP BY ga.AccountID
+)
+SELECT ga.AccountID, a.Email, a.FullName, count(ga.AccountID) AS SL FROM groupaccount ga
+INNER JOIN `account` a ON a.AccountID = ga.AccountID
+GROUP BY ga.AccountID
+HAVING count(ga.AccountID) = (SELECT max(SL) FROM CTE_GetCountAccountID);
+
+SELECT * FROM CTE_GetCountAccountID;
+
+ -- Question 3: Tạo view có chứa câu hỏi có những content quá dài (content quá 300 từ được coi là quá dài) và xóa nó đi -----------------
  
- SELECT AccountID, MAX(NumberofAccount)
- FROM AccountStatistic
- WHERE NumberofAccount = 6;
+ CREATE VIEW TableQuestion AS
+ SELECT QuestionID,Content, char_length(Content) AS LengContent
+ FROM Question;
  
+ SELECT *
+ FROM TableQuestion
+ WHERE LengContent > '20'; 
  
-	
+-- Question 4: Tạo view có chứa danh sách các phòng ban có nhiều nhân viên nhất ----------------------------------- 
+
+ DROP VIEW IF EXISTS ListAccountofDep;
+ CREATE VIEW ListAccountofDep AS
+ SELECT D.DepartmentID, D.DepartmentName, COUNT(A.AccountID) AS NumberofAccount
+ FROM Department AS D
+ JOIN `Account` AS A ON D.DepartmentID = A.DepartmentID
+ GROUP BY A.DepartmentID;
+
+ SELECT DepartmentName, MAX(NumberofAccount)
+ FROM ListAccountofDep;
  
+-- Question 5: Tạo view có chứa tất các các câu hỏi do user họ Nguyễn tạo ------------
+
+CREATE VIEW QuesfromNguyen AS
+SELECT Q.QuestionID, Q.Content, A.FullName
+FROM Question AS Q 
+JOIN `Account` AS A ON Q.CreatorID = A.AccountID
+WHERE SUBSTRING_INDEX (A.FullName,1,1) = 'Nguyen';
+
+SELECT 	* 
+FROM 	QuesfromNguyen;
