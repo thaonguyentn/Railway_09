@@ -388,4 +388,4 @@ UPDATE `GroupAccount`
 SET 	GroupID=4
 WHERE 	AccountID=5; 
 
--- ---------------------- FINISHED ASSIGNMENT 4 ---------------------------------------------
+-- ---------------------- FINISHED ASSIGNMENT 3 ---------------------------------------------
