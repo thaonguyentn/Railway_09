@@ -344,7 +344,7 @@ BEGIN
 	SELECT TQ.TypeName, COUNT(Q.QuestionID) AS NumberOfQuestion
 	FROM TypeQuestion AS TQ
 	JOIN Question AS Q ON TQ.TypeID = Q.TypeID
-    WHERE TQ.TypeName = in_TypeQue AND month(now())
+    WHERE TQ.TypeName = in_TypeQue AND MONTH(CreateDate) = Month(NOW())
 	GROUP BY TQ.TypeID; 
 
 END$$
@@ -375,11 +375,13 @@ Call sp_GetTypeIDFromTQ('Essay');
 
 -- Question 5: Sử dụng store ở question 4 để tìm ra tên của type question --------------
 
+
+
 -- Question 6: Viết 1 store cho phép người dùng nhập vào 1 chuỗi và trả về group có tên
 -- chứa chuỗi của người dùng nhập vào hoặc trả về user có username chứa chuỗi của người dùng nhập vào -----
 
-SELECT *
-FROM 
+SELECT GroupName
+FROM `Group`
 
 -- Question 7: Viết 1 store cho phép người dùng nhập vào thông tin fullName, email và trong store sẽ tự động gán:
 --             username sẽ giống email nhưng bỏ phần @..mail đi 
@@ -387,8 +389,27 @@ FROM
 --             departmentID: sẽ được cho vào 1 phòng chờ
 --             Sau đó in ra kết quả tạo thành công ----------
 
+
+
 -- Question 8: Viết 1 store cho phép người dùng nhập vào Essay hoặc Multiple-Choice------------------
 --             để thống kê câu hỏi essay hoặc multiple-choice nào có content dài nhất ---------------
+
+DROP PROCEDURE IF EXISTS sp_get_question_has_longest_content;
+DELIMITER $$
+CREATE PROCEDURE sp_get_question_has_longest_content(IN in_type_name ENUM('Essay', 'Multiple-Choice'))
+BEGIN
+	SELECT TQ.TypeName, Q.Content, CHAR_LENGTH(Q.Content) AS LengthOfContent
+	FROM TypeQuestion AS TQ
+	LEFT JOIN Question AS Q ON TQ.TypeID = Q.TypeID
+    WHERE TQ.TypeName = in_type_name AND CHAR_LENGTH(Q.Content) = (SELECT MAX(LengthOfContent)
+														     FROM(SELECT TQ.TypeName, Q.Content, CHAR_LENGTH(Q.Content) AS LengthOfContent
+														     FROM TypeQuestion AS TQ
+														     LEFT JOIN Question AS Q ON TQ.TypeID = Q.TypeID
+														     WHERE TQ.TypeName = in_type_name
+														     ) AS temp);
+END$$
+DELIMITER 
+
 
 -- Question 9: Viết 1 store cho phép người dùng xóa exam dựa vào ID -----------------------------------
 
@@ -396,9 +417,6 @@ DROP PROCEDURE IF EXISTS sp_DeleteExam;
 DELIMITER $$
 CREATE PROCEDURE sp_DeleteExam(IN in_ExamID TINYINT)
 BEGIN
-	DELETE
-	FROM 	ExamQuestion
-	WHERE 	ExamID ;
 
 	DELETE
 	FROM 	Exam
@@ -408,8 +426,34 @@ DELIMITER
 
 Call sp_DeleteExam('1');   
 
+-- Question 10: Tìm ra các exam được tạo từ 3 năm trước và xóa các exam đó đi (sử dụng store ở câu 9 để xóa)
+-- Sau đó in số lượng record đã remove từ các table liên quan trong khi removing -------------
+
+-- Question 11: Viết store cho phép người dùng xóa phòng ban bằng cách người dùng
+-- nhập vào tên phòng ban và các account thuộc phòng ban đó sẽ được chuyển về phòng ban default là phòng ban chờ việc -------
+
+DROP PROCEDURE IF EXISTS sp_DeleteDepartment;
+DELIMITER $$
+CREATE PROCEDURE sp_DeleteDepartment(IN	in_DepartmentName NVARCHAR(50))
+BEGIN
+	UPDATE 	`Account`
+    SET		DepartmentID = 10
+    WHERE	DepartmentID = (SELECT 	DepartmentID	
+							FROM	Department
+							WHERE 	DepartmentName = in_DepartmentName);
+	DELETE 
+    FROM	Department
+    WHERE	DepartmentName = in_DepartmentName;
+END$$
+DELIMITER ;
 
 -- Question 12: Viết store để in ra mỗi tháng có bao nhiêu câu hỏi được tạo trong năm nay ---------------------------------
 
+SELECT CreateDate, COUNT(Q.QuestionID)
+FROM Question AS Q
+WHERE YEAR(CreateDate) = YEAR(NOW())
+GROUP BY CreateDate;
 
+-- Question 13: Viết store để in ra mỗi tháng có bao nhiêu câu hỏi được tạo trong 6 tháng gần đây nhất
+-- (Nếu tháng nào không có thì sẽ in ra là "không có câu hỏi nào trong tháng")---------------
 
