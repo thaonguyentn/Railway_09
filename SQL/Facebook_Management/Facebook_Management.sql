@@ -71,7 +71,7 @@ INSERT INTO Staff  		(StaffID	, FirstName			, LastName	,	Email							,OfficeID)
 VALUES					(1			, 'Isis'			, 'Benzie', 'ibenzie0@symantec.com'				, 'CN001'),
 						(2			, 'Baron'			, 'Foxall', 'bfoxall1@eepurl.com'				, 'KO002'),
 						(3			, 'Meagan'			, 'Readshall', 'mreadshall2@360.cn'				, 'PH001'),
-						(4			, 'NguyenDuoc'			, 'Bucky', 'dbucky3@live.com'					, 'RU001'),
+						(4			, 'NguyenDuoc'		, 'Bucky', 'dbucky3@live.com'				, 'RU001'),
 						(5			, 'Dorette'			, 'Bampfield', 'dbampfield4@nhs.uk'				, 'ID001'),
 						(6			, 'Antonina'		, 'Follen', 'afollen5@php.net'					, 'BR001'),
 						(7			, 'Marissa'			, 'Duffie', 'mduffie6@npr.org'					, 'US001'),
@@ -172,15 +172,16 @@ VALUES					(1			, 'Isis'			, 'Benzie', 'ibenzie0@symantec.com'				, 'CN001'),
 -- Ques3: Bạn hãy lấy dữ liệu của tất cả nhân viên đang làm việc tại Vietnam ----------------
                       
 SELECT * 
-FROM Staff
-WHERE OfficeID = 'VN001';
+FROM Staff AS S
+JOIN Office AS O ON O.OfficeID = S. OfficeID
+WHERE O.OfficeID = 'VN001';
 
 --  Ques4: Lấy ra ID, FullName, Email, National của mỗi nhân viên ------------------------
 
-SELECT S.StaffID, S.FirstName, S.LastName , S.Email, N.`NationalName`
-FROM Office AS O
-JOIN `National` AS N ON O.NationalID = N.NationalID
-JOIN Staff AS S ON O.OfficeID = S.OfficeID;
+SELECT S.StaffID, S.Email, N.`NationalName`, CONCAT(S.FirstName, S.LastName)
+FROM Staff AS S
+JOIN Office AS O ON O.OfficeID = S.OfficeID
+JOIN `National` AS N ON O.NationalID = N.NationalID;
 
 -- Ques5: Lấy ra tên nước mà nhân viên có Email: "daonq@viettel.com.vn" đang làm việc -------
 WITH CTE_Table1 AS (
@@ -196,24 +197,20 @@ JOIN Staff AS S ON O.OfficeID = S.OfficeID)
  -- Ques6: Bạn hãy tìm xem trên hệ thống có quốc gia nào có thông tin trên hệ thống nhưng
 --                      không có nhân viên nào đang làm việc
 
+SELECT N.NationalName, COUNT(S.StaffID) AS number_of_staffs
+FROM `National` AS N
+LEFT JOIN office AS O ON N.NationalID = O.NationalID
+LEFT JOIN Staff AS S ON O.OfficeID = S.OfficeID
+GROUP BY N.NationalName
+HAVING number_of_staffs = 0;
 
-SELECT S.StaffID, S.FirstName, S.LastName , S.Email, N.`NationalName`
-FROM Office AS O
-JOIN `National` AS N ON O.NationalID = N.NationalID
-JOIN Staff AS S ON O.OfficeID = S.OfficeID;
-
-
-SELECT `NationalName`
-FROM CTE_Table1
-WHERE Email = 'daonq@viettel.com.vn';
 
 -- Ques7: Thống kê xem trên thế giới có bao nhiêu quốc gia mà FB đang hoạt động sử dụng
 -- tiếng Anh làm ngôn ngữ chính.--------------------------
 
 SELECT *, COUNT(LanguageMain)
 FROM `national`
-WHERE LanguageMain = 'English'
-GROUP BY LanguageMain;
+WHERE LanguageMain = 'English';
 
 -- Ques8: Viết lệnh để lấy ra thông tin nhân viên có tên (First_Name) có 10 ký tự, bắt đầu bằng
 -- chữ N và kết thúc bằng chữ C.
@@ -223,12 +220,131 @@ FROM Staff
 WHERE FirstName LIKE 'N________c';
 
 -- Ques9: Bạn hãy tìm trên hệ thống xem có nhân viên nào đang làm việc nhưng do nhập khi
--- nhập liệu bị lỗi mà nhân viên đó vẫn chưa cho thông tin về trụ sở làm việc(Office).-----
+-- nhập liệu bị lỗi mà nhân viên đó vẫn chưa cho thông tin về trụ sở làm việc(Office).----- 
 
 SELECT *
 FROM Staff
 WHERE OfficeID IS NULL;
 
+UPDATE Staff
+SET OfficeID = NULL
+WHERE StaffID IN(98,99);
+
+-- Ques10: Nhân viên có mã ID =9 hiện tại đã nghỉ việc, bạn hãy xóa thông tin của nhân viên
+-- này trên hệ thống ----------
+
+DELETE
+FROM Staff
+WHERE StaffID = 9;
+
+-- Ques11: FB vì 1 lý do nào đó không còn muốn hoạt động tại Australia nữa, và Mark
+-- Zuckerberg muốn bạn xóa tất cả các thông tin trên hệ thống liên quan đến quốc gia này. Hãy
+-- tạo 1 Procedure có đầu vào là tên quốc gia cần xóa thông tin để làm việc này và gửi lại cho anh ấy.
+
+DELETE
+FROM `National`
+WHERE NationalID = NationalName;
+
+DROP PROCEDURE IF EXISTS sp_DeleteNational;
+DELIMITER $$
+CREATE PROCEDURE sp_DeleteNational(IN in_NameCountry VARCHAR(50))
+BEGIN
+	DELETE
+	FROM `National`
+	WHERE NationalName = in_NameCountry;
+
+END$$
+DELIMITER 
+
+Call sp_DeleteNational('Brazil');  
+
+-- Ques12: Mark muốn biết xem hiện tại đang có bao nhiêu nhân viên trên toàn thế giới đang----------------
+--  làm việc cho anh ấy, hãy viết cho anh ấy 1 Function để a ấy có thể lấy dữ liệu này 1 cách nhanh chóng.----
+
+
+-- Ques13: Để thuận tiện cho việc quản trị Mark muốn số lượng nhân viên tại mỗi quốc gia chỉ tối đa 10.000 người. 
+-- Bạn hãy tạo trigger cho table Staff chỉ cho phép insert mỗi quốc gia có tối đa 10.000 nhân viên giúp anh ấy ----------------
+-- (có thể cấu hình số lượng nhân viên nhỏ hơn vd 11 nhân viên để Test). -----------------------
+
+
+-- Ques14: Bạn hãy viết 1 Procedure để lấy ra tên trụ sở mà có số lượng nhân viên đang làm việc nhiều nhất. --
+
+-- Ques15: Bạn hãy viết 1 Function để khi nhập vào thông tin Email của nhân viên thì sẽ trả ra thông tin đầy đủ của nhân viên đó.
+-- Ques16: Bạn hãy viết 1 Trigger để khi thực hiện cập nhật thông tin về trụ sở làm việc của nhân viên đó thì 
+-- hệ thống sẽ tự động lưu lại trụ sở cũ của nhân viên vào 1 bảng khác có tên Log_Office để Mark có thể xem lại khi cần thiết. ----------
+-- Ques17: FB đang vướng vào 1 đạo luật hạn chế hoạt động, FB chỉ có thể hoạt động tối đa
+-- ---------trên 100 quốc gia trên thế giới, hãy tạo Trigger để ngăn người nhập liệu nhập vào quốc gia ------------
+thứ 101 (bạn có thể sử dụng số nước nhỏ hơn để Test VD 11 nước).
+
+
+-- Ques18: Thống kê mỗi xem mỗi nước(National) đang có bao nhiêu nhân viên đang làm việc----------------
+
+SELECT N.NationalName, COUNT(S.StaffID) AS NumberOfEmployee
+FROM `National` AS N
+JOIN Office AS O ON N.NationalID = O.NationalID
+JOIN Staff AS S ON S.OfficeID = O.OfficeID
+GROUP BY N.NationalName;
+
+-- Ques19: Viết Procedure để thống kê mỗi xem mỗi nước(National) đang có bao nhiêu nhân viên đang làm việc, với đầu vào là tên nước.
+
+DROP PROCEDURE IF EXISTS sp_GetNumberStaffOfNational;
+DELIMITER $$
+CREATE PROCEDURE sp_GetNumberStaffOfNational(IN in_NameCountry VARCHAR(50))
+BEGIN
+	SELECT N.NationalName, COUNT(S.StaffID) AS NumberOfEmployee
+	FROM `National` AS N
+	JOIN Office AS O ON N.NationalID = O.NationalID
+	JOIN Staff AS S ON S.OfficeID = O.OfficeID
+    WHERE N.NationalName = in_NameCountry
+	GROUP BY N.NationalName;  
+
+END$$
+DELIMITER 
+
+Call sp_GetNumberStaffOfNational('Brazil');  
+
+
+-- Ques20: Thống kê mỗi xem trong cùng 1 trụ sở (Office) đang có bao nhiêu employee đang làm việc.
+
+SELECT O.OfficeID, COUNT(S.StaffID) AS NumberofEmployee
+FROM Office AS O
+JOIN Staff AS S ON S.OfficeID = O.OfficeID
+GROUP BY O.OfficeID;
+
+-- Ques21: Viết Procedure để thống kê mỗi xem trong cùng 1 trụ sở (Office) đang có bao nhiêu employee đang làm việc đầu vào là ID của trụ sở. ---
+
+DROP PROCEDURE IF EXISTS sp_GetAStaffromOffice;
+DELIMITER $$
+CREATE PROCEDURE sp_GetAStaffromOffice(IN in_OfficeID VARCHAR(50))
+BEGIN
+	SELECT O.OfficeID, COUNT(S.StaffID) AS NumberofEmployee
+	FROM Office AS O
+	JOIN Staff AS S ON S.OfficeID = O.OfficeID
+    WHERE O.OfficeID = in_OfficeID
+    GROUP BY O.OfficeID;
+	
+END$$
+DELIMITER 
+
+Call sp_GetAStaffromOffice('BR001');    
+
+-- Ques22: Viết Procedure để lấy ra tên quốc gia đang có nhiều nhân viên nhất -----------------
+
+SELECT NationalName
+FROM `National`, 
 
 
 
+
+-- Ques23: Thống kê mỗi country có bao nhiêu employee đang làm việc.
+
+SELECT N.NationalName, COUNT(S.StaffID) AS NumberOfEmployee
+FROM `National` AS N
+JOIN Office AS O ON N.NationalID = O.NationalID
+JOIN Staff AS S ON S.OfficeID = O.OfficeID
+GROUP BY N.NationalName;
+
+-- Ques24: Bạn hãy cấu hình lại các bảng và ràng buộc giữ liệu sao cho khi xóa 1 trụ sở làm
+--     việc (Office) thì tất cả dữ liệu liên quan đến trụ sở này sẽ chuyển về Null
+-- Ques25: Bạn hãy cấu hình lại các bảng và ràng buộc giữ liệu sao cho khi xóa 1 trụ sở làm
+--     việc (Office) thì tất cả dữ liệu liên quan đến trụ sở này sẽ bị xóa hết.
