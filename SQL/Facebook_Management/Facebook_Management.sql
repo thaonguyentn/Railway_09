@@ -55,14 +55,14 @@ FROM `National`;
 INSERT INTO Office  	(OfficeID	, StreetAddress				, NationalID) 
 VALUES                  ('CN001'	, 'China'					, 'CN'	),
 						('KO002'	,'89Northpor Court'			, 'KO'		),
-						('PH001'	, '8PrairieRoseTerrace'		, 'PH'		),
-						('RU001'	, '733DeclarationJunction'	, 'RU'		),
+						('PH001'	, '8PrairieRoseTerrace'		, 'CN'		),
+						('RU001'	, '733DeclarationJunction'	, 'US'		),
 						('ID001'	, '2893AdGateCircle'		, 'ID'		),
-						('BR001'	, '508PackersStreet'		, 'BR'		),
+						('BR001'	, '508PackersStreet'		, 'VN'		),
 						('US001'	, '18030ServiceCircle'		, 'US'		),
-						('FR001'	, '90MitchellParkway'		, 'FR'		),
+						('FR001'	, '90MitchellParkway'		, 'VN'		),
 						('VN001'	, '78DuyTanCauGiayHaNoi'	, 'VN'		),
-						('PL001'	, '64953SullivanPlace'		, 'PL'		),
+						('PL001'	, '64953SullivanPlace'		, 'US'		),
 						('MX001'	, '71MitchellPoint'			, 'MX'		);
                         
                         
