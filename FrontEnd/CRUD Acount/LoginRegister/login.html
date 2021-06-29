@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrapicons.css">
+</head>
+
+<body>
+    <div class="container" style="width: 50%;"> <br>
+        <h3 style="margin-top: 20px; color: rgb(231, 31, 164);">LOGIN</h3>
+        <br>
+
+        <div class="form-group">
+            <label for="Email">Email:</label>
+            <input type="email" required='true' class="form-control" style="color: pink;"  id="Email_Login_id" value="" required
+                placeholder="Enter email">
+        </div>
+
+        <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" id="pwd_id" placeholder="Enter password">
+        </div>
+
+        <div class="checkbox">
+            <label><input type="checkbox"> Remember me</label>
+        </div>
+
+        <button type="submit" class="btn btn-default" onclick="loginSuccess()"
+        style="background: pink; border-color: pink; color: navy;">Login</button>
+        <button type="submit" class="btn btn-default" onclick="goToRegister()"
+        style="background: pink; border-color: pink; color: navy;">Register</button>
+    </div>
+
+    <script type="text/javascript" src="function.js"></script>
+</body>
+
+</html>
+
+
+</html>

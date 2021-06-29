@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Management Employee</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container" style="background-color: rgb(184, 235, 218); margin-top: 20px;">
+        <h2 style="margin-top: 15px;">Management Employee</h2>
+        <form method="POST" id="CreateButton">
+            <div class="form-group">
+                <label for="">ID: </label>
+                <input type="number" required="true" class="form-control" id="ID" value="" placeholder="Enter Id">
+            </div>
+            <div class="form-group">
+                <label for="">Email: </label>
+                <input type="email" required="true" class="form-control" id="EmailId" value=""
+                    placeholder="Enter Email">
+            </div>
+            <div class="form-group">
+                <label for="">Username: </label>
+                <input type="text" required="true" class="form-control" id="UsernameID" value=""
+                    placeholder="Enter Username">
+            </div>
+            <div class="form-group">
+                <label for="">Fullname: </label>
+                <input type="text" required="true" class="form-control" id="FullnameId" value=""
+                    placeholder="Enter Fullname"> <br> <br>
+
+                <div class="form-group">
+                    <label for="sel1">Select a Department:</label>
+                    <select class="form-control" id="DepartmentId">
+                    <!-- <option>--Select a Department--</option> -->
+                       
+                    </select>
+                    <br>
+                </div>
+                <div class="form-group">
+                    <label for="sel1">Select a Position:</label>
+                    <select class="form-control" id="PositionId">
+                    <!-- <option>--Select a Position--</option>
+                        -->
+                    </select>
+                    <br>
+                </div>
+
+                <div class="form-group">
+                    <label for="">Cretate Date: </label>
+                    <input type="date" required="true" class="form-control" id="CretateDate_ID" value="">
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" class="btn btnsuccess" 
+                        style="background-color: deepskyblue;" onclick="createNewUser()" value="Save">
+
+                    <input type="button" class="btn btnsuccess" id="ResetButton" style="background-color: deepskyblue;"
+                        onclick="resetForm()" value="Reset">
+
+                    <input type="button" class="btn btnsuccess" id="UpdateButton" style="background-color: deepskyblue;"
+                        onclick="updateAccount()" value="Update">
+                </div>
+
+        </form>
+
+        <div class="container">
+            <div class="form">
+                <h3>Thông tin nhân viên trên hệ thống</h3>
+                <table class="table table-hover" id="Detail_Staff_ID">
+                    <thead>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Fullname</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                                <th>Cretate Date</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                    <tbody id="ResultAcount">
+                        <!-- <tr>
+                            <th>1</th>
+                            <th>thaonguyentn25598@gmail.com</th>
+                            <th>thaonguyen</th>
+                            <th>Nguyễn Thị Thảo</th>
+                            <th>Marketing</th>
+                            <th>PM</th>
+                            <th>21//05/2021</th>
+                            <th><button class="btn btn-warning" id="EditId" style="background-color: green; border-color: green;"
+                                    onclick="editAccount()">Edit</button></th>
+                            <th><button class="btn btn-warning" id="DeleteId" style="background-color: green; border-color: green;" onclick="
+                                    deleteAccount()">Delete</button></th>
+                        </tr> -->
+                    </tbody>
+
+                </table>
+
+                <nav aria-label="Page navigation example" >
+                    <ul class="pagination" id="pagination" >
+                    <li class="page-item" ><a class="page-link" style="background-color: chartreuse;" href="#">Previous</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" style="background-color: chartreuse;" href="#">Next</a></li>
+                    </ul>
+                </nav>
+
+
+            </div>
+        </div>
+        <script type="text/javascript" src="Quanlynhanvien.js"></script>
+    </div>
+
+</body>
+
+</html>

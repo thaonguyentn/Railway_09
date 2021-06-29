@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý nhân viên With AJAX </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="QLNVAjax.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form">
+            <h3>Quản lý nhân viên</h3>
+            <form method="POST" id="Main_Form_ID">
+
+                <div class="form-group">
+                    <label for="">ID: </label>
+                    <input type="number" required="true" class="form-control" id="ID_ID" value="" placeholder="Enter Id">
+                </div>
+
+                <div class="form-group">
+                    <label for="">Department Name: </label>
+                    <input type="name" required="true" class="form-control" id="Name_ID" value="" placeholder="Enter Department Name">
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-success" value="Save">
+                    <input type="button" class="btn btn-success" id="update_btn" value="Update">
+                    <input type="button" class="btn btn-success" id="ResetButton" value="Reset">
+                </div>
+            </form>
+        </div>
+
+        <div class="container">
+            <div class="form">
+                <h3>Department List</h3>
+                <div class="table-wrapper">
+                    <table class="table table-hover" id="Detail_Department_ID">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ResultDep">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="DemoDep.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+button.btn.btn-warning {
+    background-color: rgb(54, 235, 18) !important;
+    border-color: green !important;
+}
+
+.table.table-hover thead th {
+    color: #ffffff;
+    background: #da4bb6;
+}
+
+
+.table.table-hover thead th:nth-child(odd) {
+    color: #ffffff;
+    background: #50d612;
+}
